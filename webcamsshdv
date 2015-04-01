@@ -1,0 +1,43 @@
+import sys, os , time 
+import requests 
+import json 
+import simplejson
+
+
+while True:
+    #take picture with imagesnap 
+    os.system('imagesnap -d DV-VCR /Users/user/Desktop/PZI/1/PYTHON/imagga-py-master/tests/images/1.png')
+
+    #open blackbacground for svg/inkscape
+    f = open('files/bg.svg', 'r')
+    #auth imagga
+    payload = {'api_key': 'acc_781af1b59b1fe08'}
+    #open last picture taken 
+    files = {'file': open('/Users/user/Desktop/PZI/1/PYTHON/imagga-py-master/tests/images/1.png', 'rb')}
+    #send img to server
+    os.system("scp /Users/user/Desktop/PZI/1/PYTHON/imagga-py-master/tests/images/1.png max@headroom.pzwart.wdka.hro.nl:public_html/images/")
+    #make request to imagga api
+    url = 'http://api.imagga.com/draft/tags'
+    r = requests.post(url, data=payload, files=files)
+    #read results
+    data = json.loads(r.text)
+    count = 0 
+    listy = data["tags"]
+    outfile = open ('tags.txt', 'w') 
+    for i in listy:
+        word = i['tag']
+        neword = word.replace('""',' ')
+        outfile.write(neword)
+        outfile.writelines("\n")
+    outfile.close()
+    os.system("scp /Users/user/Desktop/PZI/1/PYTHON/imagga-py-master/tests/tags.txt max@headroom.pzwart.wdka.hro.nl:public_html/images/")
+    print "pause"
+    time.sleep(30)
+
+
+
+
+
+# for tag in tags:
+#     print tag[0]
+
